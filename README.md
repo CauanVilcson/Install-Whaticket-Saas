@@ -1,20 +1,15 @@
-# Install Whaticket SaaS
+# Instalador Whaticket SaaS - Redis em Docker
+
+ACESSANDO DIRETORIO DO INSTALADOR & INICIANDO INSTALAÇÕES ADICIONAIS (USAR ESTE COMANDO PARA SEGUNDA OU MAIS INSTALAÇÃO:
 
 ```bash
-sudo apt -y update && apt -y upgrade
-```
-
-FAZENDO DOWNLOAD DO INSTALADOR & INICIANDO A PRIMEIRA INSTALAÇÃO (USAR SOMENTE PARA PRIMEIRA INSTALAÇÃO):
-
-```bash
-sudo apt install -y git && git clone https://github.com/CauanVilcson/Install-Whaticket-Saas.git install_whaticket && sudo chmod -R 777 install_whaticket  && cd install_whaticket  && sudo ./install_primaria
+cd instalador  && sudo ./install_instancia
 ```
 
 ## Requisitos
 
 | --- | Mínimo | Recomendado |
 | --- | --- | --- |
-| Node JS | 20.x | 22.x |
-| Ubuntu | 20.x | 22.x |
+| Node JS | 20.x | 20.x |
+| Ubuntu | 20.x | 20.x |
 | Memória RAM | 4Gb | 8Gb |  
-

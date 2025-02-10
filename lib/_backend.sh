@@ -8,17 +8,23 @@
 #######################################
 backend_redis_create() {
   print_banner
-  printf "${WHITE} 💻 Criando Banco Postgres...${GRAY_LIGHT}"
+  printf "${WHITE} 💻 Criando Redis & Banco Postgres...${GRAY_LIGHT}"
   printf "\n\n"
 
   sleep 2
-  sudo su - postgres <<EOF
-    createdb ${instancia_add};
-    psql
-    CREATE USER ${instancia_add} SUPERUSER INHERIT CREATEDB CREATEROLE;
-    ALTER USER ${instancia_add} PASSWORD '${mysql_root_password}';
-    \q
-    exit
+
+  sudo su - root <<EOF
+  usermod -aG docker deploy
+  docker run --name redis-${instancia_add} -p ${redis_port}:6379 --restart always --detach redis redis-server --requirepass ${mysql_root_password}
+  
+  sleep 2
+  sudo su - postgres
+  createdb ${instancia_add};
+  psql
+  CREATE USER ${instancia_add} SUPERUSER INHERIT CREATEDB CREATEROLE;
+  ALTER USER ${instancia_add} PASSWORD '${mysql_root_password}';
+  \q
+  exit
 EOF
 
 sleep 2
@@ -55,8 +61,8 @@ FRONTEND_URL=${frontend_url}
 PROXY_PORT=443
 PORT=${backend_port}
 
-DB_HOST=localhost
 DB_DIALECT=postgres
+DB_HOST=localhost
 DB_PORT=5432
 DB_USER=${instancia_add}
 DB_PASS=${mysql_root_password}
@@ -65,13 +71,19 @@ DB_NAME=${instancia_add}
 JWT_SECRET=${jwt_secret}
 JWT_REFRESH_SECRET=${jwt_refresh_secret}
 
-REDIS_URI=redis://${mysql_root_password}@127.0.0.1:6379
+REDIS_URI=redis://:${mysql_root_password}@127.0.0.1:${redis_port}
 REDIS_OPT_LIMITER_MAX=1
 REGIS_OPT_LIMITER_DURATION=3000
 
-USER_LIMIT=10000
-CONNECTIONS_LIMIT=10000
+USER_LIMIT=${max_user}
+CONNECTIONS_LIMIT=${max_whats}
 CLOSED_SEND_BY_ME=true
+
+MAIL_HOST="smtp.hostinger.com"
+MAIL_USER="contato@seusite.com"
+MAIL_PASS="senha"
+MAIL_FROM="Recuperar Senha <contato@seusite.com>"
+MAIL_PORT="465"
 
 [-]EOF
 EOF
@@ -142,6 +154,7 @@ backend_update() {
   rm -rf dist 
   npm run build
   npx sequelize db:migrate
+  npx sequelize db:migrate
   npx sequelize db:seed
   pm2 start ${empresa_atualizar}-backend
   pm2 save 
@@ -205,8 +218,7 @@ backend_start_pm2() {
 
   sudo su - deploy <<EOF
   cd /home/deploy/${instancia_add}/backend
-  sudo pm2 start dist/server.js --name ${instancia_add}-backend
-  sudo pm2 save --force
+  pm2 start dist/server.js --name ${instancia_add}-backend
 EOF
 
   sleep 2
