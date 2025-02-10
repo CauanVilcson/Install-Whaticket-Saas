@@ -1,11 +1,13 @@
 # Instalador Whaticket SaaS - Redis em Docker
 
-ACESSANDO DIRETORIO DO INSTALADOR & INICIANDO INSTALAÇÕES ADICIONAIS (USAR ESTE COMANDO PARA SEGUNDA OU MAIS INSTALAÇÃO:
-
 ```bash
-cd instalador  && sudo ./install_instancia
+sudo apt -y update && apt -y upgrade
 ```
 
+
+```bash
+sudo apt install -y git && git clone https://github.com/CauanVilcson/Install-Whaticket-Saas.git instalador && sudo chmod -R 777 instalador  && cd instalador  && sudo ./install_instancia
+```
 ## Requisitos
 
 | --- | Mínimo | Recomendado |
